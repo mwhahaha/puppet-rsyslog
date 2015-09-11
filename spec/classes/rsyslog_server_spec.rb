@@ -116,6 +116,11 @@ describe 'rsyslog::server', :type => :class do
             should contain_file('/etc/rsyslog.d/server.conf').with_content(/\(\[A-Za-z-\]\*\)--end%\/auth.log/)
             should contain_file('/etc/rsyslog.d/server.conf').with_content(/\(\[A-Za-z-\]\*\)--end%\/messages/)
           end
+
+          it "should not contain EscapeControlCharactersOnReceive off" do
+            should_not contain_rsyslog__snippet('00_client_config.conf').with_content(
+               /EscapeControlCharactersOnReceive off/)
+          end
         end
 
         context "enable_onefile (osfamily = #{osfamily})" do
@@ -137,6 +142,16 @@ describe 'rsyslog::server', :type => :class do
             should contain_file('/etc/rsyslog.d/server.conf').with_content(/%hostname%\/messages/)
           end
         end
+
+        context "escape_control_characters => false" do
+          let(:params) {{ :escape_control_characters => false }}
+
+          it "should set EscapeControlCharactersOnReceive off" do
+           should contain_rsyslog__snippet('server').with_content(
+               /EscapeControlCharactersOnReceive off/)
+          end
+        end
+
 
       end
     end
